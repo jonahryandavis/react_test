@@ -1,0 +1,262 @@
+.App {
+  text-align: center;
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+button {
+  background-color: #61dafb;
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 5px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+button:hover {
+  background-color: #21a1f1;
+}
+
+.button-primary {
+  background-color: #61dafb;
+  color: #282c34;
+  border: 2px solid #61dafb;
+}
+
+.button-primary:hover {
+  background-color: #21a1f1;
+  border-color: #21a1f1;
+}
+
+.button-outline {
+  background-color: transparent;
+  color: #61dafb;
+  border: 2px solid #61dafb;
+  opacity: 0.6;
+}
+
+.button-outline:hover {
+  background-color: rgba(97, 218, 251, 0.1);
+  opacity: 1;
+}
+
+button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+  color: #888;
+  border: none;
+}
+
+.lobby {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.difficulty-selector {
+  display: flex;
+  gap: 5px;
+  width: 100%;
+}
+
+.difficulty-selector button {
+  flex: 1;
+}
+
+.difficulty-easy {
+  background-color: #4caf50;
+}
+
+.difficulty-easy:hover {
+  background-color: #45a049;
+}
+
+.difficulty-medium {
+  background-color: #ffc107;
+}
+
+.difficulty-medium:hover {
+  background-color: #e6ad06;
+}
+
+.difficulty-hard {
+  background-color: #f44336;
+}
+
+.difficulty-hard:hover {
+  background-color: #da190b;
+}
+
+.room {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.navigation {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+}
+
+.game-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background-color: #444;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.grid.currentTurn.O {
+  background-color: #565e8f;
+}
+
+.grid.currentTurn.X {
+  background-color: #8f5656;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+}
+
+@keyframes fadeInSlideInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInSlideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.cell {
+  width: 50px;
+  height: 50px;
+  background-color: #333;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: transparent;
+}
+
+.cell.animate-from-left {
+  animation: fadeInSlideInLeft 0.5s ease-out;
+}
+
+.cell.animate-from-right {
+  animation: fadeInSlideInRight 0.5s ease-out;
+}
+
+.cell.X {
+  background-color: #ff4d4d;
+  color: white;
+  box-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+}
+
+.cell.X.winning {
+  background-color: #ff7979;
+  box-shadow: 0 0 15px rgb(255, 218, 218);
+}
+
+.cell.O {
+  background-color: #504dff;
+  color: white;
+  box-shadow: 0 0 10px rgba(80, 77, 255, 0.5);
+}
+
+.cell.O.winning {
+  background-color: #6562ff;
+  box-shadow: 0 0 15px rgb(170, 170, 255);
+}
+
+.button-row-left {
+  position: absolute;
+  left: 0;
+  opacity: 0;
+  mix-blend-mode: hard-light;
+  width: 250px;
+  height: 50px;
+  border-radius: 0%;
+  transform: translateX(-60px);
+}
+
+.button-row-right {
+  position: absolute;
+  right: 0;
+  opacity: 0;
+  mix-blend-mode: hard-light;
+  width: 250px;
+  height: 50px;
+  border-radius: 0%;
+  transform: translateX(60px);
+}
+
+.button-row-left.O {
+  background-image: linear-gradient(to right, rgba(107, 96, 206, 1), gray);
+}
+
+.button-row-right.O {
+  background-image: linear-gradient(to left, rgba(107, 96, 206, 1), gray);
+}
+
+.button-row-left.X {
+  background-image: linear-gradient(to right, rgb(206, 96, 96), gray);
+}
+
+.button-row-right.X {
+  background-image: linear-gradient(to left, rgb(206, 96, 96), gray);
+}
+
+.button-row-right:hover {
+  opacity: 1;
+}
+
+.button-row-left:hover {
+  opacity: 1;
+}
+
+.button-row-right:disabled {
+  background-image: linear-gradient(to left, rgb(100, 100, 100), gray);
+}
+
+.button-row-left:disabled {
+  background-image: linear-gradient(to right, rgb(100, 100, 100), gray);
+}
