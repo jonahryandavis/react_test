@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import socket from "./socket"
+import socket from "../socket"
+import Navigation from "./Navigation"
+import GameBoard from "./GameBoard"
 
 const ROOM_STATUS = {
   LOADING: "loading",
@@ -105,93 +107,31 @@ function GameRoom() {
 
   return (
     <div className="room">
-      <div className="navigation">
-        <button
-          className={showEmphasizedBack ? "button-primary" : "button-outline"}
-          onClick={() => {
-            socket.emit("leave_room", { roomId })
-            navigate("/")
-          }}
-        >
-          Back to Lobby
-        </button>
-        <h4>Room: {roomId}</h4>
-        <h4>You are: {myToken}</h4>
-        <h4>Difficulty: {difficulty}</h4>
-      </div>
-      <div className="game-board">
-        {status === ROOM_STATUS.PLAYING && (
-          <h2>Current Turn: {currentPlayer}</h2>
-        )}
-        {status === ROOM_STATUS.FINISHED && (
-          <h1>
-            {winner} won! {loser} lost.
-          </h1>
-        )}
-        <div
-          className={
-            "grid" +
-            (currentPlayer === myToken ? " currentTurn " + currentPlayer : "")
-          }
-        >
-          {board.map((row, rIndex) => (
-            <div key={rIndex} className="row">
-              <button
-                className={
-                  "button-row-left " +
-                  (currentPlayer === myToken ? myToken : "")
-                }
-                disabled={
-                  status !== ROOM_STATUS.PLAYING ||
-                  currentPlayer !== myToken ||
-                  !moves.some((m) => m.row === rIndex && m.side === SIDE.LEFT)
-                }
-                onClick={() => makeMove(rIndex, SIDE.LEFT)}
-              ></button>
-              {row.map((cell, cIndex) => {
-                const animationDirection =
-                  latestCell.row === rIndex
-                    ? latestCell.column === cIndex
-                      ? latestCell.side
-                      : null
-                    : null
-                const animationClass =
-                  animationDirection === SIDE.LEFT
-                    ? "animate-from-left"
-                    : animationDirection === SIDE.RIGHT
-                    ? "animate-from-right"
-                    : ""
-                return (
-                  <div
-                    key={cIndex}
-                    className={`cell ${cell} ${
-                      winningCells.some(
-                        (m) => m.row === rIndex && m.column === cIndex
-                      )
-                        ? "winning"
-                        : ""
-                    } ${animationClass}`}
-                  >
-                    {cell}
-                  </div>
-                )
-              })}
-              <button
-                className={
-                  "button-row-right " +
-                  (currentPlayer === myToken ? myToken : "")
-                }
-                disabled={
-                  status !== ROOM_STATUS.PLAYING ||
-                  currentPlayer !== myToken ||
-                  !moves.some((m) => m.row === rIndex && m.side === SIDE.RIGHT)
-                }
-                onClick={() => makeMove(rIndex, SIDE.RIGHT)}
-              ></button>
-            </div>
-          ))}
-        </div>
-      </div>
+      <Navigation
+        roomId={roomId}
+        myToken={myToken}
+        difficulty={difficulty}
+        showEmphasizedBack={showEmphasizedBack}
+        onBack={() => {
+          socket.emit("leave_room", { roomId })
+          navigate("/")
+        }}
+      />
+      <GameBoard
+        board={board}
+        moves={moves}
+        winningCells={winningCells}
+        latestCell={latestCell}
+        currentPlayer={currentPlayer}
+        myToken={myToken}
+        status={status}
+        makeMove={makeMove}
+        SIDE={SIDE}
+        ROOM_STATUS={ROOM_STATUS}
+        winner={winner}
+        loser={loser}
+        difficulty={difficulty}
+      />
     </div>
   )
 }

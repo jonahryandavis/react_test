@@ -1,4 +1,4 @@
-const { Board, PLAYER } = require("./board")
+const { Board } = require("./board")
 
 const ROOM_TYPE = {
   PVP: "PvP",
@@ -70,10 +70,6 @@ class Room {
       difficulty: this.difficulty,
     }
   }
-
-  getDifficulty() {
-    return this.difficulty
-  }
 }
 
-module.exports = { Room, ROOM_TYPE, ROOM_STATUS }
+module.exports = { Room, ROOM_TYPE, ROOM_STATUS, DIFFICULTY }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import socket from "./socket"
+import socket from "../socket"
 
 const ROOM_TYPE = {
   PVP: "PvP",

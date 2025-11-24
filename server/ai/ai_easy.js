@@ -1,6 +1,3 @@
-/**
- * Easy AI - Random move selection
- */
 function selectMove(board) {
   const validMoves = board.getValidMoves()
 

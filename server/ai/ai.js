@@ -1,20 +1,21 @@
-const { Board, PLAYER } = require("../board")
 const aiEasy = require("./ai_easy")
 const aiMedium = require("./ai_medium")
 const aiHard = require("./ai_hard")
+
+const { DIFFICULTY, ROOM_STATUS } = require("../room")
 
 function isAIPlayer(playerId) {
   return playerId && playerId.startsWith("AI_AGENT")
 }
 
-async function selectMove(board, difficulty = "easy") {
+async function selectMove(board, difficulty = DIFFICULTY.EASY) {
   // Delegate to the appropriate AI module based on difficulty
   switch (difficulty) {
-    case "easy":
+    case DIFFICULTY.EASY:
       return aiEasy.selectMove(board)
-    case "medium":
+    case DIFFICULTY.MEDIUM:
       return aiMedium.selectMove(board)
-    case "hard":
+    case DIFFICULTY.HARD:
       return aiHard.selectMove(board)
     default:
       return aiEasy.selectMove(board)
@@ -22,8 +23,6 @@ async function selectMove(board, difficulty = "easy") {
 }
 
 function scheduleAIMove(room, io, delay = 2000) {
-  const { ROOM_STATUS } = require("../room")
-
   // Don't schedule if game is over
   if (room.status !== ROOM_STATUS.PLAYING) {
     return
@@ -46,7 +45,7 @@ function scheduleAIMove(room, io, delay = 2000) {
         return
       }
 
-      const move = await selectMove(room.board, room.getDifficulty())
+      const move = await selectMove(room.board, room.difficulty)
 
       const success = room.handleMove(
         currentPlayerObj.token,
