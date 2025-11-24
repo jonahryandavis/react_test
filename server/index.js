@@ -127,9 +127,9 @@ io.on("connection", (socket) => {
     }
   })
 
-  socket.on("join_room", ({ roomId }) => {
+  socket.on("join_room", async ({ roomId }) => {
     console.log(`User ${socket.id} joining room ${roomId}`)
-    const room = rooms.get(roomId)
+    let room = rooms.get(roomId)
 
     if (room) {
       // Check if already in room?
@@ -154,7 +154,50 @@ io.on("connection", (socket) => {
         io.to(roomId).emit("game_update", room.getGameState())
       }
     } else {
-      socket.emit("game_error", { message: "Room not found" })
+      // Try to load from DB for spectators
+      const db = require("./db")
+      try {
+        const {
+          room: dbRoom,
+          players,
+          board,
+          moves,
+        } = await db.getRoomState(roomId)
+        if (!dbRoom) {
+          socket.emit("game_error", { message: "Room not found" })
+          return
+        }
+        // Reconstruct Room instance
+        const { Room } = require("./room")
+        const reconstructedRoom = new Room(
+          dbRoom.id,
+          dbRoom.type,
+          dbRoom.difficulty
+        )
+        reconstructedRoom.status = dbRoom.status
+        // Add players
+        players.forEach((p) => {
+          reconstructedRoom.players.push({
+            player_id: p.id,
+            is_ai: !!p.is_ai,
+            token: p.label,
+          })
+        })
+        // Restore board state
+        if (board) {
+          reconstructedRoom.board.grid = JSON.parse(board.grid_state)
+          reconstructedRoom.board.currentPlayer = board.current_player_id
+          reconstructedRoom.board.winner = board.winner
+          reconstructedRoom.board.gameOver = !!board.game_over
+        }
+        // Optionally, you could replay moves if needed
+        // Add to memory for future
+        rooms.set(roomId, reconstructedRoom)
+        socket.join(roomId)
+        socket.emit("game_start", reconstructedRoom.getGameState())
+      } catch (err) {
+        socket.emit("game_error", { message: "Room not found" })
+      }
     }
   })
 

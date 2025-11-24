@@ -1,4 +1,5 @@
 const { Board } = require("./board")
+const db = require("./db")
 
 const ROOM_TYPE = {
   PVP: "PvP",
@@ -26,18 +27,30 @@ class Room {
     this.players = []
     this.difficulty = difficulty
     this.status = ROOM_STATUS.WAITING
+
+    // Insert room into DB
+    db.insertRoom(this)
   }
 
   addPlayer(player) {
     if (this.players.length >= 2) return false
     this.players.push(player)
 
-    if (this.type === ROOM_TYPE.PVP && this.players.length === 2) {
+    // Insert player into DB
+    db.insertPlayer(player)
+
+    // Update room with player_x/player_o if available
+    const playerX = this.players[0]?.player_id || null
+    const playerO = this.players[1]?.player_id || null
+    db.updateRoomPlayers(this.id, playerX, playerO)
+
+    if (
+      (this.type === ROOM_TYPE.PVP && this.players.length === 2) ||
+      (this.type === ROOM_TYPE.PVAI && this.players.length === 2) ||
+      (this.type === ROOM_TYPE.AIVAI && this.players.length === 2)
+    ) {
       this.status = ROOM_STATUS.PLAYING
-    } else if (this.type === ROOM_TYPE.PVAI && this.players.length === 2) {
-      this.status = ROOM_STATUS.PLAYING
-    } else if (this.type === ROOM_TYPE.AIVAI && this.players.length === 2) {
-      this.status = ROOM_STATUS.PLAYING
+      db.updateRoomStatus(this.id, this.status)
     }
 
     return true
@@ -53,8 +66,26 @@ class Room {
 
     const success = this.board.makeMove(row, side)
     if (success) {
+      // Write move to DB
+      db.insertMove({
+        room_id: this.id,
+        player_id: playerToken,
+        row,
+        side,
+      })
+
+      // Update board state in DB
+      db.updateBoardState({
+        room_id: this.id,
+        grid_state: JSON.stringify(this.board.grid),
+        current_player_id: this.board.currentPlayer,
+        winner: this.board.winner || null,
+        game_over: this.board.gameOver,
+      })
+
       if (this.board.gameOver) {
         this.status = ROOM_STATUS.FINISHED
+        db.updateRoomStatus(this.id, this.status)
       }
     }
     return success
