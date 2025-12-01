@@ -1,18 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import socket from "../socket"
-
-const ROOM_TYPE = {
-  PVP: "PvP",
-  PVAI: "PvAI",
-  AIVAI: "AIvAI",
-}
-
-const DIFFICULTY = {
-  EASY: "easy",
-  MEDIUM: "medium",
-  HARD: "hard",
-}
+import { ROOM_TYPE, DIFFICULTY } from "react-test-shared"
 
 function Lobby() {
   const navigate = useNavigate()

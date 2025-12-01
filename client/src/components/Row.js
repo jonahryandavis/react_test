@@ -1,5 +1,6 @@
 import React from "react"
 import Cell from "./Cell"
+import { SIDE } from "react-test-shared"
 
 function Row({
   row,
@@ -11,7 +12,6 @@ function Row({
   myToken,
   status,
   makeMove,
-  SIDE,
 }) {
   return (
     <div className="row">

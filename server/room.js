@@ -1,23 +1,7 @@
 const { Board } = require("./board")
 const db = require("./db")
+const { ROOM_TYPE, ROOM_STATUS, DIFFICULTY } = require('../shared/enums.js')
 
-const ROOM_TYPE = {
-  PVP: "PvP",
-  PVAI: "PvAI",
-  AIVAI: "AIvAI",
-}
-
-const ROOM_STATUS = {
-  WAITING: "waiting",
-  PLAYING: "playing",
-  FINISHED: "finished",
-}
-
-const DIFFICULTY = {
-  EASY: "easy",
-  MEDIUM: "medium",
-  HARD: "hard",
-}
 
 class Room {
   constructor(id, type, difficulty = DIFFICULTY.EASY) {

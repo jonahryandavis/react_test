@@ -3,25 +3,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import socket from "../socket"
 import Navigation from "./Navigation"
 import GameBoard from "./GameBoard"
-
-const ROOM_STATUS = {
-  LOADING: "loading",
-  WAITING: "waiting",
-  PLAYING: "playing",
-  FINISHED: "finished",
-  ERROR: "error",
-}
-
-const PLAYER = {
-  X: "X",
-  O: "O",
-  SPECTATOR: "Spectator",
-}
-
-const SIDE = {
-  LEFT: "L",
-  RIGHT: "R",
-}
+import { ROOM_STATUS, PLAYER } from "react-test-shared"
 
 function GameRoom() {
   const { roomId } = useParams()
@@ -126,8 +108,6 @@ function GameRoom() {
         myToken={myToken}
         status={status}
         makeMove={makeMove}
-        SIDE={SIDE}
-        ROOM_STATUS={ROOM_STATUS}
         winner={winner}
         loser={loser}
         difficulty={difficulty}

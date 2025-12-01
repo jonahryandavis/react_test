@@ -1,13 +1,5 @@
-const PLAYER = {
-  X: "X",
-  O: "O",
-}
-
-const SIDE = {
-  LEFT: "L",
-  RIGHT: "R",
-}
-
+const { PLAYER, SIDE } = require('../shared/enums.js')
+ 
 class Board {
   constructor() {
     this.rows = 7

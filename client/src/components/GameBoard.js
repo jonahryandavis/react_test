@@ -1,5 +1,6 @@
 import React from "react"
 import Row from "./Row"
+import {ROOM_STATUS} from "react-test-shared"
 
 function GameBoard({
   board,
@@ -10,8 +11,6 @@ function GameBoard({
   myToken,
   status,
   makeMove,
-  SIDE,
-  ROOM_STATUS,
   winner,
   loser,
   difficulty,
@@ -42,7 +41,6 @@ function GameBoard({
             myToken={myToken}
             status={status}
             makeMove={makeMove}
-            SIDE={SIDE}
           />
         ))}
       </div>

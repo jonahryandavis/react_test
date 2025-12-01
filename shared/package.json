@@ -1,0 +1,7 @@
+{
+  "name": "react-test-shared",
+  "version": "1.0.0",
+  "description": "Shared code for react test project",
+  "main": "index.js",
+  "type": "module"
+}
