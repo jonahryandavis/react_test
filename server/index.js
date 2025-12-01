@@ -67,7 +67,8 @@ function startPvAI(socket, difficulty) {
   socket.emit("game_start", room.getGameState())
 
   // Trigger AI move if AI goes first (X is human, O is AI)
-  AI.scheduleAIMove(room, io)
+  const delay = getDelay(ROOM_TYPE.PVAI, difficulty)
+  AI.scheduleAIMove(room, io, delay)
 }
 
 function startAIVAI(socket, difficulty) {
@@ -86,7 +87,8 @@ function startAIVAI(socket, difficulty) {
   socket.emit("game_start", room.getGameState())
 
   // Trigger AI move (both players are AI, X goes first)
-  AI.scheduleAIMove(room, io, 1000)
+  const delay = getDelay(ROOM_TYPE.AIVAI, difficulty)
+  AI.scheduleAIMove(room, io, delay)
 }
 
 function getDelay(mode, difficulty) {
@@ -230,7 +232,7 @@ io.on("connection", (socket) => {
 
       // Check if next player is AI and trigger their move
       if (room.status === ROOM_STATUS.PLAYING) {
-        delay = getDelay(room.mode, room.difficulty)
+        const delay = getDelay(room.mode, room.difficulty)
         AI.scheduleAIMove(room, io, delay)
       }
     }
