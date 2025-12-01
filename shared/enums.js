@@ -1,6 +1,7 @@
 export const PLAYER = {
   X: "X",
   O: "O",
+  SPECTATOR: "Spectator",
 }
 
 export const SIDE = {
@@ -15,9 +16,11 @@ export const ROOM_TYPE = {
 }
 
 export const ROOM_STATUS = {
+  LOADING: "loading",
   WAITING: "waiting",
   PLAYING: "playing",
   FINISHED: "finished",
+  ERROR: "error",
 }
 
 export const DIFFICULTY = {

@@ -1,7 +1,6 @@
 const { Board } = require("./board")
 const db = require("./db")
-const { ROOM_TYPE, ROOM_STATUS, DIFFICULTY } = require('../shared/enums.js')
-
+const { ROOM_TYPE, ROOM_STATUS, DIFFICULTY } = require("../shared/enums.js")
 
 class Room {
   constructor(id, type, difficulty = DIFFICULTY.EASY) {
@@ -16,6 +15,14 @@ class Room {
     db.insertRoom(this)
   }
 
+  isFull() {
+    return this.players.length === 2
+  }
+
+  isGameOver() {
+    return this.board.gameOver
+  }
+
   addPlayer(player) {
     if (this.players.length >= 2) return false
     this.players.push(player)
@@ -28,20 +35,12 @@ class Room {
     const playerO = this.players[1]?.player_id || null
     db.updateRoomPlayers(this.id, playerX, playerO)
 
-    if (isFull()) {
+    if (this.isFull()) {
       this.status = ROOM_STATUS.PLAYING
       db.updateRoomStatus(this.id, this.status)
     }
 
     return true
-  }
-
-  isFull() {
-    return this.players.length === 2
-  }
-
-  isGameOver() {
-    return this.board.gameOver
   }
 
   handleMove(playerToken, row, side) {
@@ -66,7 +65,7 @@ class Room {
         game_over: this.board.gameOver,
       })
 
-      if (isGameOver()) {
+      if (this.isGameOver()) {
         this.status = ROOM_STATUS.FINISHED
         db.updateRoomStatus(this.id, this.status)
       }

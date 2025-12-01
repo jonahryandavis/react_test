@@ -1,6 +1,6 @@
 import io from "socket.io-client"
 
-// Connect to the current host (works with proxy in package.json)
-const socket = io()
+// Connect to the server (port 3001)
+const socket = io("http://localhost:3001")
 
 export default socket
