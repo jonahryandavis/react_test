@@ -44,11 +44,7 @@ class Room {
     const playerO = this.players[1]?.player_id || null
     db.updateRoomPlayers(this.id, playerX, playerO)
 
-    if (
-      (this.type === ROOM_TYPE.PVP && this.players.length === 2) ||
-      (this.type === ROOM_TYPE.PVAI && this.players.length === 2) ||
-      (this.type === ROOM_TYPE.AIVAI && this.players.length === 2)
-    ) {
+    if (isFull()) {
       this.status = ROOM_STATUS.PLAYING
       db.updateRoomStatus(this.id, this.status)
     }
@@ -60,12 +56,15 @@ class Room {
     return this.players.length === 2
   }
 
+  isGameOver() {
+    return this.board.gameOver
+  }
+
   handleMove(playerToken, row, side) {
     if (this.status !== ROOM_STATUS.PLAYING) return false
     if (this.board.currentPlayer !== playerToken) return false
 
-    const success = this.board.makeMove(row, side)
-    if (success) {
+    if (this.board.makeMove(row, side)) {
       // Write move to DB
       db.insertMove({
         room_id: this.id,
@@ -83,12 +82,13 @@ class Room {
         game_over: this.board.gameOver,
       })
 
-      if (this.board.gameOver) {
+      if (isGameOver()) {
         this.status = ROOM_STATUS.FINISHED
         db.updateRoomStatus(this.id, this.status)
       }
+      return true
     }
-    return success
+    return false
   }
 
   getGameState() {
