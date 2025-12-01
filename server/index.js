@@ -67,7 +67,7 @@ function startPvAI(socket, difficulty) {
   socket.emit("game_start", room.getGameState())
 
   // Trigger AI move if AI goes first (X is human, O is AI)
-  const delay = getDelay(ROOM_TYPE.PVAI, difficulty)
+  const delay = getDelay(ROOM_TYPE.PVAI, difficulty, room.status)
   AI.scheduleAIMove(room, io, delay)
 }
 
@@ -87,11 +87,14 @@ function startAIVAI(socket, difficulty) {
   socket.emit("game_start", room.getGameState())
 
   // Trigger AI move (both players are AI, X goes first)
-  const delay = getDelay(ROOM_TYPE.AIVAI, difficulty)
+  const delay = getDelay(ROOM_TYPE.AIVAI, difficulty, room.status)
   AI.scheduleAIMove(room, io, delay)
 }
 
-function getDelay(mode, difficulty) {
+function getDelay(mode, difficulty, status) {
+  if (status == ROOM_STATUS.REPLAYING) {
+    return 500 // Faster delay during replay
+  }
   let delay = 1000 // Fast response feels good
   if (difficulty === DIFFICULTY.HARD) {
     // We need to limit delay on hard to stay within LLM rate limits
@@ -232,10 +235,46 @@ io.on("connection", (socket) => {
 
       // Check if next player is AI and trigger their move
       if (room.status === ROOM_STATUS.PLAYING) {
-        const delay = getDelay(room.mode, room.difficulty)
+        const delay = getDelay(room.mode, room.difficulty, room.status)
         AI.scheduleAIMove(room, io, delay)
       }
     }
+  })
+
+  function handleReplayMove(room, moveHistory, currentMoveIndex) {
+    if (currentMoveIndex > moveHistory.length) {
+      socket.emit("game_error", { message: "Invalid move history for room." })
+      return
+    }
+    const move = moveHistory[currentMoveIndex]
+
+    if (!room.handleMove(move.player_id, move.row, move.side)) {
+      socket.emit("game_error", { message: "Invalid move history for room." })
+      return
+    }
+    io.to(room.id).emit("game_update", room.getGameState())
+
+    if (room.isGameOver()) return
+
+    const delay = getDelay(room.mode, room.difficulty, room.status)
+    setTimeout(() => {
+      handleReplayMove(room, moveHistory, currentMoveIndex + 1)
+    }, delay)
+  }
+
+  socket.on("replay_game", ({ roomId }) => {
+    const room = rooms.get(roomId)
+    if (!room) return
+
+    if (room.status !== ROOM_STATUS.FINISHED) return
+
+    room.board.reset()
+    room.status = ROOM_STATUS.REPLAYING
+    io.to(room.id).emit("game_update", room.getGameState())
+
+    moveHistory = room.getMoveHistory().then((moves) => {
+      handleReplayMove(room, moves, 0)
+    })
   })
 
   socket.on("leave_waiting", () => {

@@ -1,9 +1,20 @@
-const { PLAYER, SIDE } = require('../shared/enums.js')
- 
+const { PLAYER, SIDE } = require("../shared/enums.js")
+
 class Board {
   constructor() {
     this.rows = 7
     this.cols = 7
+    this.grid = Array(this.rows)
+      .fill(null)
+      .map(() => Array(this.cols).fill(null))
+    this.currentPlayer = PLAYER.X
+    this.winner = null
+    this.gameOver = false
+    this.winningCells = []
+    this.latestCell = { row: null, column: null }
+  }
+
+  reset() {
     this.grid = Array(this.rows)
       .fill(null)
       .map(() => Array(this.cols).fill(null))

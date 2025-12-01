@@ -130,6 +130,20 @@ class GameDatabase {
       })
     })
   }
+
+  getMoveHistory(roomId) {
+    const db = this.db
+    return new Promise((resolve, reject) => {
+      db.all(
+        `SELECT * FROM moves WHERE room_id = ? ORDER BY id ASC`,
+        [roomId],
+        (err, moves) => {
+          if (err) return reject(err)
+          resolve(moves)
+        }
+      )
+    })
+  }
 }
 
 const db = new GameDatabase()

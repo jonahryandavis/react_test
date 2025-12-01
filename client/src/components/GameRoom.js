@@ -95,10 +95,14 @@ function GameRoom() {
         myToken={myToken}
         roomType={roomType}
         difficulty={difficulty}
+        status={status}
         showEmphasizedBack={showEmphasizedBack}
         onBack={() => {
           socket.emit("leave_room", { roomId })
           navigate("/")
+        }}
+        onReplay={() => {
+          socket.emit("replay_game", { roomId })
         }}
       />
       <GameBoard

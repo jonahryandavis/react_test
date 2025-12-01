@@ -44,7 +44,11 @@ class Room {
   }
 
   handleMove(playerToken, row, side) {
-    if (this.status !== ROOM_STATUS.PLAYING) return false
+    if (
+      this.status !== ROOM_STATUS.PLAYING &&
+      this.status !== ROOM_STATUS.REPLAYING
+    )
+      return false
     if (this.board.currentPlayer !== playerToken) return false
 
     if (this.board.makeMove(row, side)) {
@@ -72,6 +76,16 @@ class Room {
       return true
     }
     return false
+  }
+
+  async getMoveHistory() {
+    let moves = []
+    try {
+      moves = await db.getMoveHistory(this.id)
+    } catch (err) {
+      console.error("Error fetching move history:", err)
+    }
+    return moves
   }
 
   getGameState() {

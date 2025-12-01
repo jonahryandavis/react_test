@@ -19,6 +19,7 @@ export const ROOM_STATUS = {
   LOADING: "loading",
   WAITING: "waiting",
   PLAYING: "playing",
+  REPLAYING: "replaying",
   FINISHED: "finished",
   ERROR: "error",
 }
