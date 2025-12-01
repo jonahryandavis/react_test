@@ -21,6 +21,7 @@ function GameRoom() {
   const [winner, setWinner] = useState(null)
   const [loser, setLoser] = useState(null)
   const [difficulty, setDifficulty] = useState(null)
+  const [roomType, setRoomType] = useState(null)
   const [status, setStatus] = useState(ROOM_STATUS.LOADING)
   const hasJoined = useRef(false)
 
@@ -38,6 +39,7 @@ function GameRoom() {
       setLatestCell(data.board.latestCell)
       setCurrentPlayer(data.board.currentPlayer)
       setDifficulty(data.difficulty)
+      setRoomType(data.type)
 
       const me = data.players.find((p) => p.id === socket.id)
       if (me) {
@@ -53,7 +55,6 @@ function GameRoom() {
       setWinningCells(data.board.winningCells)
       setLatestCell(data.board.latestCell)
       setCurrentPlayer(data.board.currentPlayer)
-      setDifficulty(data.difficulty)
       if (data.status === ROOM_STATUS.FINISHED) {
         setStatus(ROOM_STATUS.FINISHED)
         setWinner(data.board.winner)
@@ -92,6 +93,7 @@ function GameRoom() {
       <Navigation
         roomId={roomId}
         myToken={myToken}
+        roomType={roomType}
         difficulty={difficulty}
         showEmphasizedBack={showEmphasizedBack}
         onBack={() => {
