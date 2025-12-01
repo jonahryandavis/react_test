@@ -28,6 +28,8 @@ const rooms = new Map() // roomId -> Room
 let waitingPlayer = null // Socket for PvP matchmaking
 
 function startPvP(socket) {
+  if (!waitingPlayer || !socket) return
+
   // Match found!
   const roomId = uuidv4()
   const room = new Room(roomId, ROOM_TYPE.PVP)
@@ -101,6 +103,13 @@ function getDelay(mode, difficulty) {
     delay = 2000
   }
   return delay
+}
+
+function handleWaitingDisconnect(socket) {
+  if (waitingPlayer && waitingPlayer.id === socket.id) {
+    console.log(`User ${socket.id} left waiting queue`)
+    waitingPlayer = null
+  }
 }
 
 io.on("connection", (socket) => {
@@ -190,8 +199,6 @@ io.on("connection", (socket) => {
           reconstructedRoom.board.winner = board.winner
           reconstructedRoom.board.gameOver = !!board.game_over
         }
-        // Optionally, you could replay moves if needed
-        // Add to memory for future
         rooms.set(roomId, reconstructedRoom)
         socket.join(roomId)
         socket.emit("game_start", reconstructedRoom.getGameState())
@@ -230,17 +237,12 @@ io.on("connection", (socket) => {
   })
 
   socket.on("leave_waiting", () => {
-    if (waitingPlayer && waitingPlayer.id === socket.id) {
-      console.log(`User ${socket.id} left waiting queue`)
-      waitingPlayer = null
-    }
+    handleWaitingDisconnect(socket)
   })
 
   socket.on("disconnect", () => {
     console.log(`User disconnected: ${socket.id}`)
-    if (waitingPlayer && waitingPlayer.id === socket.id) {
-      waitingPlayer = null
-    }
+    handleWaitingDisconnect(socket)
   })
 })
 
